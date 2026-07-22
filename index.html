@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Платформа: Проф. Строительство & Тест на Логику</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        .menu-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+            text-align: center;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .btn-logic {
+            background-color: #e67e22;
+        }
+        .btn-logic:hover {
+            background-color: #d35400;
+        }
+        .question-box {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #fafafa;
+            border-left: 5px solid #3498db;
+            border-radius: 4px;
+        }
+        .options {
+            list-style: none;
+            padding: 0;
+        }
+        .options li {
+            margin: 10px 0;
+        }
+        .options label {
+            cursor: pointer;
+            display: block;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+        .options label:hover {
+            background: #f1f1f1;
+        }
+        .hint {
+            margin-top: 10px;
+            font-style: italic;
+            color: #7f8c8d;
+            display: none;
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .nav-btn {
+            padding: 10px 20px;
+            background: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .nav-btn:hover {
+            background: #27ae60;
+        }
+        .result-box {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="app">
+    <h1>Платформа развития и тестирования</h1>
+    <p style="text-align: center; color: #666;">Выберите направление для проверки профессиональных знаний и логического мышления:</p>
+    
+    <div class="menu-container">
+        <button class="btn" onclick="startTest('construction')">🏗️ Профессиональное строительство</button>
+        <button class="btn btn-logic" onclick="startTest('logicReady')">🧠 Тест на определение логической готовности</button>
+    </div>
+</div>
+
+<script>
+    // База данных тестов (вопросы оставлены пустыми для заполнения)
+    const testsData = {
+        construction: [
+            {
+                q: "[Здесь будет вопрос по строительству №1]",
+                a: ["Вариант А", "Вариант Б", "Вариант В", "Вариант Г"],
+                correct: 0,
+                hint: "💡 Подсказка к строительному вопросу №1."
+            },
+            {
+                q: "[Здесь будет вопрос по строительству №2]",
+                a: ["Вариант А", "Вариант Б", "Вариант В", "Вариант Г"],
+                correct: 0,
+                hint: "💡 Подсказка к строительному вопросу №2."
+            }
+        ],
+        logicReady: [
+            {
+                q: "[Здесь будет логический вопрос №1]",
+                a: ["Вариант А", "Вариант Б", "Вариант В", "Вариант Г"],
+                correct: 0,
+                hint: "💡 Подсказка к логическому вопросу №1."
+            },
+            {
+                q: "[Здесь будет логический вопрос №2]",
+                a: ["Вариант А", "Вариант Б", "Вариант В", "Вариант Г"],
+                correct: 0,
+                hint: "💡 Подсказка к логическому вопросу №2."
+            }
+        ]
+    };
+
+    let currentTestKey = '';
+    let currentIndex = 0;
+    let score = 0;
+    let userAnswers = [];
+
+    function startTest(testKey) {
+        currentTestKey = testKey;
+        currentIndex = 0;
+        score = 0;
+        userAnswers = new Array(testsData[testKey].length).fill(null);
+        renderQuestion();
+    }
+
+    function renderQuestion() {
+        const app = document.getElementById('app');
+        const testArray = testsData[currentTestKey];
+        
+        if (currentIndex >= testArray.length) {
+            renderResults();
+            return;
+        }
+
+        const item = testArray[currentIndex];
+
+        let html = `
+            <h2>Вопрос ${currentIndex + 1} из ${testArray.length}</h2>
+            <div class="question-box">
+                <p><strong>${item.q}</strong></p>
+                <ul class="options">
+        `;
+
+        item.a.forEach((opt, idx) => {
+            const checked = userAnswers[currentIndex] === idx ? 'checked' : '';
+            html += `
+                <li>
+                    <label>
+                        <input type="radio" name="question" value="${idx}" ${checked} onclick="selectOption(${idx})"> 
+                        ${opt}
+                    </label>
+                </li>
+            `;
+        });
+
+        html += `
+                </ul>
+                <button class="nav-btn" style="background-color: #f39c12; margin-top: 10px;" onclick="toggleHint()">Показать подсказку</button>
+                <div id="hintBox" class="hint">${item.hint}</div>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" ${currentIndex === 0 ? 'style="visibility:hidden"' : ''} onclick="prevQuestion()">Назад</button>
+                <button class="nav-btn" onclick="nextQuestion()">${currentIndex === testArray.length - 1 ? 'Завершить тест' : 'Далее'}</button>
+            </div>
+        `;
+
+        app.innerHTML = html;
+    }
+
+    function selectOption(idx) {
+        userAnswers[currentIndex] = idx;
+    }
+
+    function toggleHint() {
+        const hintBox = document.getElementById('hintBox');
+        hintBox.style.display = hintBox.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function nextQuestion() {
+        if (userAnswers[currentIndex] === null) {
+            alert('Пожалуйста, выберите вариант ответа!');
+            return;
+        }
+        currentIndex++;
+        renderQuestion();
+    }
+
+    function prevQuestion() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            renderQuestion();
+        }
+    }
+
+    function renderResults() {
+        const testArray = testsData[currentTestKey];
+        score = 0;
+        userAnswers.forEach((ans, idx) => {
+            if (ans === testArray[idx].correct) {
+                score++;
+            }
+        });
+
+        const percent = Math.round((score / testArray.length) * 100);
+        let message = percent >= 80 ? 'Отличный уровень подготовки!' : percent >= 50 ? 'Хороший результат, но есть над чем поработать.' : 'Стоит повторить материал и потренироваться еще.';
+
+        const app = document.getElementById('app');
+        app.innerHTML = `
+            <h2>Результаты тестирования</h2>
+            <div class="result-box">
+                <p>Правильных ответов: ${score} из ${testArray.length} (${percent}%)</p>
+                <p style="color: #2980b9; font-size: 16px; margin-top: 15px;">${message}</p>
+            </div>
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn" onclick="location.reload()" style="display: inline-block; width: auto; padding: 12px 30px;">Вернуться в главное меню</button>
+            </div>
+        `;
+    }
+</script>
+
+</body>
+</html>
