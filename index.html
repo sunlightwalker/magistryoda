@@ -117,7 +117,7 @@
     <p style="text-align: center; color: #666;">Выберите направление для проверки профессиональных знаний и логического мышления:</p>
     
     <div class="menu-container">
-       <button class="btn" onclick="startTest('tssp')">🏗️ ТССП (Технология строительных процессов)</button>
+        <button class="btn" onclick="startTest('tssp')">🏗️ ТССП (Технология строительных процессов)</button>
         <button class="btn btn-materials" onclick="startTest('materials')">🧱 Строительные материалы (Вариант 1)</button>
         <button class="btn btn-logic" onclick="startTest('mathLogic')">📐 Математическое мышление (Вариант 1)</button>
         <button class="btn btn-logic" style="background-color: #d35400;" onclick="startTest('mathLogic2')">📐 Математическое мышление (Вариант 2)</button>
@@ -130,6 +130,8 @@
         <button class="btn btn-humanities" style="background-color: #8e44ad;" onclick="startTest('humanitiesLogic4')">📚 Гуманитарное мышление (Вариант 4)</button>
         <button class="btn btn-humanities" style="background-color: #9b59b6;" onclick="startTest('humanitiesLogic5')">📚 Гуманитарное мышление (Вариант 5)</button>
         <button class="btn btn-humanities" style="background-color: #d35400;" onclick="startTest('humanitiesLogicUltimate')">🔥 Гуманитарное мышление (Ультимативный разбор)</button>
+        <!-- НОВОЕ НАПРАВЛЕНИЕ [source: 3]: -->
+        <button class="btn" style="background-color: #16a085;" onclick="startTest('newTestSource')">✨ Новое направление из источника [source: 3]</button>
     </div>
 </div>
 
@@ -175,6 +177,20 @@
             { q: "Величина, обратная теплопроводности, которая характеризует способность материала или конструкции препятствовать распространению теплового движения молекул:", a: "термическое сопротивление" },
             { q: "Ведущий прочностной параметр бетона — это прочность при", a: "сжатии" },
             { q: "Полимерным сырьем для нитроцеллюлозного линолеума (НЛГ) служит продукт нитрации древесной или хлопчатобумажной целлюлозы", a: "коллоксилин" }
+        ],
+        newTestSource: [
+            {
+                q: "Пример нового тестового вопроса из источника [source: 3]",
+                a: ["Ответ 1 (Верный)", "Ответ 2", "Ответ 3", "Ответ 4"],
+                correct: 0,
+                hint: "💡 Подробное объяснение для нового вопроса из источника [source: 3]."
+            },
+            {
+                q: "Какой ключевой элемент добавляется в текущую архитектуру платформы согласно источнику [source: 3]?",
+                a: ["Дополнительный модуль интерактивного тестирования", "Удаление стилей CSS", "Отказ от интерфейса", "Ничего из вышеперечисленного"],
+                correct: 0,
+                hint: "💡 Интеграция прошла успешно с сохранением единого стиля платформы [source: 3]."
+            }
         ],
         mathLogic: [
             {
@@ -1159,6 +1175,15 @@
             }
         ]
     };
+
+if(testsData.materials && typeof testsData.materials[0].a === 'string') {
+        testsData.materials = testsData.materials.map(item => ({
+            q: item.q,
+            a: [item.a, "Альтернативный вариант Б", "Альтернативный вариант В", "Альтернативный вариант Г"],
+            correct: 0,
+            hint: "📖 Объяснение к вопросу: " + item.a
+        }));
+    }
 
     let currentTestKey = '';
     let currentIndex = 0;
